@@ -239,6 +239,10 @@ LV_FONT_DECLARE(lv_font_simsun_16_cjk)
 LV_FONT_CUSTOM_DECLARE
 #endif
 
+#if LV_FONT_SYST_16
+LV_FONT_DECLARE(lv_font_syst_16)
+#endif
+
 /**
  * Just a wrapper around LV_FONT_DEFAULT because it might be more convenient to use a function is some cases
  * @return  pointer to LV_FONT_DEFAULT

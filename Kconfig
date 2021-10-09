@@ -397,6 +397,8 @@ menu "LVGL configuration"
                 bool "Enable Dejavu 16 Persian, Hebrew, Arabic letters"
             config LV_FONT_SIMSUN_16_CJK
                 bool "Enable Simsun 16 CJK"
+            config LV_FONT_SYST_16
+                bool "Enable Siyuan Sun"
         endmenu
 
         config LV_FONT_FMT_TXT_LARGE
@@ -505,6 +507,9 @@ menu "LVGL configuration"
             config LV_FONT_DEFAULT_SIMSUN_16_CJK
                 bool "Simsun 16 CJK"
                 select LV_FONT_SIMSUN_16_CJK
+            config LV_FONT_DEFAULT_SYST_16
+                bool "Siyuan Sun"
+                select LV_FONT_SYST_16
         endchoice
     endmenu
 

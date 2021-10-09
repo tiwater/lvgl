@@ -112,6 +112,8 @@ extern "C" {
 #define CONFIG_LV_THEME_DEFAULT_FONT         &lv_font_dejavu_16_persian_hebrew
 #elif defined CONFIG_LV_FONT_DEFAULT_SIMSUN_16_CJK
 #define CONFIG_LV_THEME_DEFAULT_FONT         &lv_font_simsun_16_cjk
+#elif defined CONFIG_LV_FONT_DEFAULT_SYST_16
+#define CONFIG_LV_THEME_DEFAULT_FONT_16         &lv_font_syst_16
 #endif
 #endif
 

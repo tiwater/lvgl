@@ -952,6 +952,13 @@ e.g. "stm32f769xx.h" or "stm32f429xx.h"*/
 #    define LV_FONT_SIMSUN_16_CJK            0  /*1000 most common CJK radicals*/
 #  endif
 #endif
+#ifndef LV_FONT_SYST_16
+#  ifdef CONFIG_LV_FONT_SYST_16
+#    define LV_LV_FONT_SYST_16 CONFIG_LV_FONT_SYST_16
+#  else
+#    define LV_FONT_SYST_16                 0  /*1000 Siyuan Song*/
+#  endif
+#endif
 
 /*Pixel perfect monospace fonts*/
 #ifndef LV_FONT_UNSCII_8
