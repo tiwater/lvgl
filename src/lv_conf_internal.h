@@ -954,7 +954,7 @@ e.g. "stm32f769xx.h" or "stm32f429xx.h"*/
 #endif
 #ifndef LV_FONT_SYST_16
 #  ifdef CONFIG_LV_FONT_SYST_16
-#    define LV_LV_FONT_SYST_16 CONFIG_LV_FONT_SYST_16
+#    define LV_FONT_SYST_16 CONFIG_LV_FONT_SYST_16
 #  else
 #    define LV_FONT_SYST_16                 0  /*1000 Siyuan Song*/
 #  endif
