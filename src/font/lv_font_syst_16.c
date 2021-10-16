@@ -1,5 +1,8 @@
 #include "lvgl.h"
 #include "../misc/lv_fs.h"
+#if CONFIG_SPIRAM_USE_CAPS_ALLOC
+//#include "esp_head_caps.h"
+#endif
 
 typedef struct{
     uint16_t min;
@@ -29,12 +32,63 @@ static x_header_t __g_xbf_hd = {
 };
 
 #define FONT_PARTITION_TYPE   (0x66)
+
+
 #define LOAD_FONT_FROM_PARTITION   1
+#define LOAD_FONT_FROM_MEMORY   2
+#define LOAD_FONT_FROM_FILE   3
+
+#define LOAD_FONT_METHOD LOAD_FONT_FROM_MEMORY
 
 
-#if LOAD_FONT_FROM_PARTITION
+#if LOAD_FONT_METHOD == LOAD_FONT_FROM_PARTITION
 extern void port_font_partition_read(uint8_t* buf, int part_type, int offset, int size);
 static uint8_t __g_font_buf[96];
+#elif LOAD_FONT_METHOD == LOAD_FONT_FROM_MEMORY
+
+#if CONFIG_SPIRAM_USE_CAPS_ALLOC
+extern void *heap_caps_malloc( size_t size, uint32_t caps );
+#define MALLOC_CAP_SPIRAM           (1<<10)
+#define MALLOC_CAP_8BIT             (1<<2)
+#endif
+
+uint8_t* fontbuf = NULL;
+static const char font_name[] = "S:/system/syst_16.bin";
+
+static void load_font() {
+    lv_fs_res_t res = LV_FS_RES_OK;
+    lv_fs_file_t file;
+    if((res = lv_fs_open(&file, font_name, LV_FS_MODE_RD)) == LV_FS_RES_OK) {
+        if((res = lv_fs_seek(&file, 0, LV_FS_SEEK_END)) == LV_FS_RES_OK){
+            uint32_t length;
+            if((res = lv_fs_tell(&file, &length)) == LV_FS_RES_OK){
+#if CONFIG_SPIRAM_USE_CAPS_ALLOC
+                fontbuf = heap_caps_malloc(length, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
+#else
+                fontbuf = malloc(length);
+#endif
+                if(fontbuf == NULL){
+                    LV_LOG_ERROR("Out of memory for font loading");
+                    lv_fs_close(&file);
+                    return;
+                }
+                lv_fs_seek(&file, 0, LV_FS_SEEK_SET);
+                if(lv_fs_read(&file, fontbuf, length, NULL) != LV_FS_RES_OK) {
+                    free(fontbuf);
+                    fontbuf = NULL;
+                    LV_LOG_ERROR("Error reading font file: %s", font_name);
+                }
+            } else {
+                LV_LOG_ERROR("Error %d on check file length", res);
+            }
+        } else {
+            LV_LOG_ERROR("Error %d on find file end", res);
+        }
+        lv_fs_close(&file);
+    } else {
+        LV_LOG_ERROR("Error %d on opening font file: %s", res, font_name);
+    }
+}
 #else
 
 #define CACHE_SIZE (50)
@@ -47,7 +101,7 @@ static font_cache_t font_cache[CACHE_SIZE];
 static int wptr = 0;
 static int cache_count = 0;
 
-static const char font_name[] = "S:/syst_16.bin";
+static const char font_name[] = "S:/system/syst_16.bin";
 static lv_fs_file_t* file = NULL;
 
 static lv_fs_res_t open_font_file() {
@@ -76,9 +130,14 @@ static void close_font_file() {
 
 static uint8_t *__user_font_getdata(uint32_t offset, int size){
 
-#if LOAD_FONT_FROM_PARTITION
+#if LOAD_FONT_METHOD == LOAD_FONT_FROM_PARTITION
     port_font_partition_read(__g_font_buf, FONT_PARTITION_TYPE, offset, size);
     return __g_font_buf;
+#elif LOAD_FONT_METHOD == LOAD_FONT_FROM_MEMORY
+    if(fontbuf == NULL){
+        load_font();
+    }
+    return (uint8_t*)(fontbuf + offset);
 #else
     //file_rw_offset(mp_obj_t f, const char* buf, mp_uint_t offset, mp_uint_t buf_len, byte flags);
     uint8_t * buf = NULL;
