@@ -28,7 +28,7 @@ typedef struct{
 static x_header_t __g_xbf_hd = {
     .min = 0x0009,
     .max = 0xffe5,
-    .bpp = 4,
+    .bpp = 2,
 };
 
 #define FONT_PARTITION_TYPE   (0x66)
