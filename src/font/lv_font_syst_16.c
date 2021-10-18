@@ -223,6 +223,6 @@ const lv_font_t lv_font_syst_16 = {
     .get_glyph_bitmap = __user_font_get_bitmap,
     .get_glyph_dsc = __user_font_get_glyph_dsc,
     .line_height = 16,
-    .base_line = 0,
+    .base_line = -3,
 };
 
