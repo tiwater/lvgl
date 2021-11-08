@@ -53,7 +53,7 @@ extern void *heap_caps_malloc( size_t size, uint32_t caps );
 #endif
 
 uint8_t* fontbuf = NULL;
-static const char font_name[] = "S:/system/syst_16.bin";
+static const char font_name[] = "S:/data/res/fonts/syst_16.bin";
 
 static void load_font() {
     lv_fs_res_t res = LV_FS_RES_OK;
